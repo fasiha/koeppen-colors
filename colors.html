@@ -1,0 +1,54 @@
+<head>
+<meta charset="UTF-8">
+<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js" charset="utf-8"></script>
+<style>
+.colored {
+  display: flex;
+}
+.inner-colored {
+  padding: 0.5em;
+}
+
+body {
+  font-family: monospace;
+}
+</style>
+</head>
+<body>
+
+<script>
+// From http://tristen.ca/hcl-picker/#/hcl/6/1.08/FEA088/FDA27F : five
+// equally-spaced colors at the same lightness in HCL color space.
+// TODO tweak the second one, it gets blown to white earlier than the others.
+var colors =
+    '#CF826E,#B888A2,#739CAB,#68A37C,#A19752'.split(',').map(s => d3.hcl(s));
+// Koeppen-Geiger nicknames
+var names = 'hot,cold,frozen,warm,dry'.split(',');
+
+// Five outer boxes: one per base color
+var boxes = d3.select('body')
+                .append('div')
+                .selectAll('div.colored')
+                .data(colors)
+                .enter()
+                .append('div')
+                .classed('colored', true);
+boxes.append('div').style('min-width', '6em').text((d, i) => names[i]);
+
+// Inner boxes: the color variations
+var modifyColor = (orig, level) => {
+  var color = d3.hcl(orig.toString());
+  color.l += level;
+  return color.toString();
+};
+boxes.selectAll('div.inner-colored')
+    .data(d => _.range(-60, 51, 1).map(i => ({color : d, level : i})))
+    .enter()
+    .append('div')
+    .classed('inner-colored', true)
+    //.text(d => `${modifyColor(d.color, d.level)}`) // uncomment to see hex
+    .style('background-color', d => modifyColor(d.color, d.level));
+
+</script>
+</body>
