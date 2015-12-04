@@ -1,5 +1,7 @@
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
+<title>Köppen–Geiger colors</title>
 <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js" charset="utf-8"></script>
 <style>
@@ -9,13 +11,29 @@
 .inner-colored {
   padding: 0.5em;
 }
-
+dl {
+  line-height: 130%;
+}
 body {
-  font-family: monospace;
+  font-family: sans-serif;
 }
 </style>
 </head>
 <body>
+  <h1><a href="http://koeppen-geiger.vu-wien.ac.at/present.htm">Köppen–Geiger explanation</a></h1>
+
+  <dl>
+    <dt>B: "dry"</dt>
+    <dd>Dry (cold or hot)</dd>
+    <dt>A: "hot"</dt>
+    <dd>Not dry, always hot (&gt;18 °C)</dd>
+    <dt>C: "warm"</dt>
+    <dd>Not dry, winter temperatures rarely drop to freezing</dd>
+    <dt>D: "cold"</dt>
+    <dd>Not dry, winter temperatures drop below freezing</dd>
+    <dt>E: "frozen"</dt>
+    <dd>Year-round low temperatures (&lt;10 °C)</dd>
+  </dl>
 
 <script>
 // From http://tristen.ca/hcl-picker/#/hcl/6/1.08/FEA088/FDA27F : five
@@ -25,16 +43,19 @@ var colors =
     '#CF826E,#B888A2,#739CAB,#68A37C,#A19752'.split(',').map(s => d3.hcl(s));
 // Koeppen-Geiger nicknames
 var names = 'hot,cold,frozen,warm,dry'.split(',');
+var map = _.object(names, colors);
+var orderedNames = 'dry,hot,warm,cold,frozen'.split(',');
+var orderedColors = orderedNames.map(s => map[s]);
 
 // Five outer boxes: one per base color
 var boxes = d3.select('body')
                 .append('div')
                 .selectAll('div.colored')
-                .data(colors)
+                .data(orderedColors)
                 .enter()
                 .append('div')
                 .classed('colored', true);
-boxes.append('div').style('min-width', '6em').text((d, i) => names[i]);
+boxes.append('div').style('min-width', '6em').text((d, i) => orderedNames[i]);
 
 // Inner boxes: the color variations
 var modifyColor = (orig, level) => {
@@ -52,3 +73,4 @@ boxes.selectAll('div.inner-colored')
 
 </script>
 </body>
+</html>
