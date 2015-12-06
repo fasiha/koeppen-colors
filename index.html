@@ -10,6 +10,7 @@
 }
 .inner-colored {
   padding: 0.5em;
+  font-family: monospace;
 }
 dl {
   line-height: 130%;
@@ -38,9 +39,11 @@ body {
 <script>
 // From http://tristen.ca/hcl-picker/#/hcl/6/1.08/FEA088/FDA27F : five
 // equally-spaced colors at the same lightness in HCL color space.
-// TODO tweak the second one, it gets blown to white earlier than the others.
+// TODO tweak the colors to prevent them merging at the high and low ends.
 var colors =
     '#CF826E,#B888A2,#739CAB,#68A37C,#A19752'.split(',').map(s => d3.hcl(s));
+colors[1].l -= 10;
+
 // Koeppen-Geiger nicknames
 var names = 'hot,cold,frozen,warm,dry'.split(',');
 var map = _.object(names, colors);
@@ -68,9 +71,13 @@ boxes.selectAll('div.inner-colored')
     .enter()
     .append('div')
     .classed('inner-colored', true)
-    //.text(d => `${modifyColor(d.color, d.level)}`) // uncomment to see hex
+    .text(d => `${modifyColor(d.color, d.level)}`)
     .style('background-color', d => modifyColor(d.color, d.level));
 
+// For data output
+var dataTable =
+    colors.map(c => _.range(-60, 50 + 1e-6, 0.1).map(i => modifyColor(c, i)));
+// copy(dataTable.map(a=>a.join(',')).join('\n')); // makes a handy CSV file
 </script>
 </body>
 </html>
