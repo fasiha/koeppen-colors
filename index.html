@@ -39,10 +39,19 @@ body {
 <script>
 // From http://tristen.ca/hcl-picker/#/hcl/6/1.08/FEA088/FDA27F : five
 // equally-spaced colors at the same lightness in HCL color space.
+
+// Option 1: bright colors
 // TODO tweak the colors to prevent them merging at the high and low ends.
 var colors =
     '#CF826E,#B888A2,#739CAB,#68A37C,#A19752'.split(',').map(s => d3.hcl(s));
 colors[1].l -= 10;
+var minL = -60;
+var maxL = 50;
+
+// Option 2: dull, less contrasty, colors.
+colors = '#CAAC95,#C4ADA1,#B7B2A3,#B4B398,#C0B08E'.split(',').map(s => d3.hcl(s));
+minL = -75;
+maxL = 35;
 
 // Koeppen-Geiger nicknames
 var names = 'hot,cold,frozen,warm,dry'.split(',');
@@ -67,7 +76,7 @@ var modifyColor = (orig, level) => {
   return color.toString();
 };
 boxes.selectAll('div.inner-colored')
-    .data(d => _.range(-60, 51, 1).map(i => ({color : d, level : i})))
+    .data(d => _.range(minL, maxL+1, 4).map(i => ({color : d, level : i})))
     .enter()
     .append('div')
     .classed('inner-colored', true)
@@ -76,7 +85,7 @@ boxes.selectAll('div.inner-colored')
 
 // For data output
 var dataTable =
-    colors.map(c => _.range(-60, 50 + 1e-6, 0.1).map(i => modifyColor(c, i)));
+    colors.map(c => _.range(minL, maxL + 1e-6, 0.1).map(i => modifyColor(c, i)));
 // copy(dataTable.map(a=>a.join(',')).join('\n')); // makes a handy CSV file
 </script>
 </body>
